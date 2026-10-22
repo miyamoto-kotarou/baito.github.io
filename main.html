@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>スタッフ別シフト表</title>
+  <script src="config.js"></script>
+  <script>
+    if (sessionStorage.getItem("isLoggedIn") !== "true") {
+      alert("パスワード認証が必要です。");
+      window.location.href = "index.html";
+    }
+  </script>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 1.5rem;
+      background-color: #f4f4f9;
+      color: #333;
+    }
+
+    .container {
+      max-width: 100%;
+      margin: 0 auto;
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      overflow-x: auto;
+    }
+
+    .header-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .header-nav h1 {
+      margin: 0;
+      font-size: 1.4rem;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .nav-buttons button, .staff-add-area button, .logout-btn, .admin-link-btn {
+      padding: 0.5rem 1rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .nav-buttons button:hover, .staff-add-area button:hover {
+      background-color: #0056b3;
+    }
+
+    .admin-link-btn {
+      background-color: #28a745;
+    }
+    .admin-link-btn:hover {
+      background-color: #218838;
+    }
+
+    .logout-btn {
+      background-color: #6c757d;
+    }
+    .logout-btn:hover {
+      background-color: #5a6268;
+    }
+
+    .edit-mode-btn {
+      background-color: #ffc107 !important;
+      color: #333 !important;
+      font-weight: bold;
+    }
+    .edit-mode-btn.active {
+      background-color: #dc3545 !important;
+      color: white !important;
+    }
+
+    .staff-add-area {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      margin-bottom: 1rem;
+      display: none;
+    }
+
+    .staff-add-area input {
+      padding: 0.4rem;
+      font-size: 0.9rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .table-wrapper {
+      max-height: 75vh;
+      overflow-y: auto;
+      overflow-x: auto;
+      border: 1px solid #ddd;
+    }
+
+    table {
+      border-collapse: collapse;
+      white-space: nowrap;
+      background-color: #fff;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      text-align: center;
+      padding: 4px 6px;
+      font-size: 0.85rem;
+      vertical-align: middle;
+    }
+
+    th {
+      background-color: #f8f9fa;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    th.name-col, td.name-col {
+      position: sticky;
+      left: 0;
+      background-color: #f8f9fa;
+      z-index: 3;
+      min-width: 150px;
+      text-align: left;
+      padding-left: 8px;
+    }
+    td.name-col {
+      background-color: #fff;
+    }
+
+    .name-input, .time-input {
+      border: 1px solid transparent;
+      background: transparent;
+      text-align: center;
+      font-size: 0.8rem;
+      width: 55px;
+    }
+
+    body.is-editing .name-input {
+      border: 1px solid #ccc;
+      background: #fff;
+      padding: 2px 4px;
+      width: 90px;
+    }
+    body.is-editing .time-input {
+      border: 1px solid #ccc;
+      background: #fff;
+      padding: 2px;
+    }
+
+    th.sun { color: #dc3545; background-color: #fff5f5; }
+    th.sat { color: #007bff; background-color: #f0f8ff; }
+    td.sun { background-color: #fffcfc; }
+    td.sat { background-color: #fafdff; }
+
+    .shift-cell-input {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .shift-cell-input input.is-off {
+      background-color: #f8d7da !important;
+      color: #721c24 !important;
+      font-weight: bold;
+    }
+
+    .delete-staff-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: #dc3545;
+      cursor: pointer;
+      font-size: 0.8rem;
+      margin-left: 4px;
+    }
+    body.is-editing .delete-staff-btn {
+      display: inline;
+    }
+    .delete-staff-btn:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header-nav">
+      <div class="nav-buttons">
+        <button onclick="changeMonth(-1)">◀ 前の月</button>
+        <button onclick="changeMonth(1)">次の月 ▶</button>
+      </div>
+      <h1 id="calendar-title">2026年 10月 スタッフ別シフト表</h1>
+      <div class="nav-buttons">
+        <button id="edit-toggle-btn" class="edit-mode-btn" onclick="toggleEditMode()">🔒 シフト編集ロック</button>
+        <button class="admin-link-btn" onclick="goToAdmin()">⚙️ 管理者設定</button>
+        <button class="logout-btn" onclick="logout()">ログアウト</button>
+      </div>
+    </div>
+
+    <div id="staff-add-container" class="staff-add-area">
+      <input type="text" id="new-staff-name" placeholder="新しいスタッフ名">
+      <button onclick="addStaff()">スタッフを追加</button>
+    </div>
+
+    <div class="table-wrapper">
+      <table id="shift-table">
+        <!-- JavaScriptで動的生成 -->
+      </table>
+    </div>
+  </div>
+
+  <script>
+    let currentDate = new Date();
+    let isEditing = false;
+    let staffList = JSON.parse(localStorage.getItem("shift_staff_list")) || ["スタッフA", "スタッフB", "スタッフC"];
+
+    function toggleEditMode() {
+      if (!isEditing) {
+        const inputPwd = prompt("シフト編集用のパスワードを入力してください：");
+        const currentEditPwd = localStorage.getItem("site_edit_password") || SITE_CONFIG.editPassword;
+
+        if (inputPwd === currentEditPwd) {
+          isEditing = true;
+          document.body.classList.add("is-editing");
+          const btn = document.getElementById("edit-toggle-btn");
+          btn.textContent = "🔓 シフト編集中";
+          btn.classList.add("active");
+          document.getElementById("staff-add-container").style.display = "flex";
+          renderTable();
+        } else if (inputPwd !== null) {
+          alert("パスワードが違います。");
+        }
+      } else {
+        isEditing = false;
+        document.body.classList.remove("is-editing");
+        const btn = document.getElementById("edit-toggle-btn");
+        btn.textContent = "🔒 シフト編集ロック";
+        btn.classList.remove("active");
+        document.getElementById("staff-add-container").style.display = "none";
+        renderTable();
+      }
+    }
+
+    function goToAdmin() {
+      const inputPwd = prompt("管理者設定を開くためのパスワードを入力してください：");
+      const currentEditPwd = localStorage.getItem("site_edit_password") || SITE_CONFIG.editPassword;
+
+      if (inputPwd === currentEditPwd) {
+        window.location.href = "admin.html";
+      } else if (inputPwd !== null) {
+        alert("パスワードが違います。");
+      }
+    }
+
+    function renderTable() {
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      const lastDay = new Date(year, month + 1, 0).getDate();
+
+      document.getElementById("calendar-title").textContent = `${year}年 ${month + 1}月 スタッフ別シフト表`;
+
+      const table = document.getElementById("shift-table");
+      table.innerHTML = "";
+
+      const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
+
+      let headerTr1 = document.createElement("tr");
+      let thName = document.createElement("th");
+      thName.className = "name-col";
+      thName.textContent = "スタッフ名";
+      thName.rowSpan = 2;
+      headerTr1.appendChild(thName);
+
+      for (let d = 1; d <= lastDay; d++) {
+        const dateObj = new Date(year, month, d);
+        const dayOfWeek = dateObj.getDay();
+        const th = document.createElement("th");
+        th.textContent = d;
+        if (dayOfWeek === 0) th.classList.add("sun");
+        if (dayOfWeek === 6) th.classList.add("sat");
+        headerTr1.appendChild(th);
+      }
+
+      let headerTr2 = document.createElement("tr");
+      for (let d = 1; d <= lastDay; d++) {
+        const dateObj = new Date(year, month, d);
+        const dayOfWeek = dateObj.getDay();
+        const th = document.createElement("th");
+        th.textContent = weekdays[dayOfWeek];
+        if (dayOfWeek === 0) th.classList.add("sun");
+        if (dayOfWeek === 6) th.classList.add("sat");
+        headerTr2.appendChild(th);
+      }
+
+      table.appendChild(headerTr1);
+      table.appendChild(headerTr2);
+
+      staffList.forEach((staff, index) => {
+        const tr = document.createElement("tr");
+        
+        const tdName = document.createElement("td");
+        tdName.className = "name-col";
+        tdName.innerHTML = `
+          <input type="text" class="name-input" value="${staff}" data-old-name="${staff}" ${isEditing ? '' : 'readonly'} onfocus="this.select()" onchange="updateStaffName(${index}, this)">
+          <button class="delete-staff-btn" onclick="deleteStaff('${staff}')">削除</button>
+        `;
+        tr.appendChild(tdName);
+
+        for (let d = 1; d <= lastDay; d++) {
+          const dateObj = new Date(year, month, d);
+          const dayOfWeek = dateObj.getDay();
+          const currentDayStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+          
+          const td = document.createElement("td");
+          if (dayOfWeek === 0) td.classList.add("sun");
+          if (dayOfWeek === 6) td.classList.add("sat");
+
+          // onfocus="this.select()" を追加してクリック時に全選択されるようにする
+          td.innerHTML = `
+            <div class="shift-cell-input">
+              <input type="text" class="time-input time-start" placeholder="-" data-staff="${staff}" data-date="${currentDayStr}" ${isEditing ? '' : 'readonly'} onfocus="this.select()" onblur="formatTimeInput(this)" oninput="handleInput(this)">
+              <input type="text" class="time-input time-end" placeholder="-" data-staff="${staff}" data-date="${currentDayStr}" ${isEditing ? '' : 'readonly'} onfocus="this.select()" onblur="formatTimeInput(this)" oninput="handleInput(this)">
+            </div>
+          `;
+
+          const savedData = localStorage.getItem(`shift_${staff}_${currentDayStr}`);
+          if (savedData) {
+            const parsed = JSON.parse(savedData);
+            const startInput = td.querySelector(".time-start");
+            const endInput = td.querySelector(".time-end");
+            
+            if (parsed.start) startInput.value = parsed.start;
+            if (parsed.end) endInput.value = parsed.end;
+            
+            checkAndApplyOffStyle(startInput, endInput);
+          }
+
+          tr.appendChild(td);
+        }
+
+        table.appendChild(tr);
+      });
+    }
+
+    function changeMonth(direction) {
+      currentDate.setMonth(currentDate.getMonth() + direction);
+      renderTable();
+    }
+
+    function addStaff() {
+      const input = document.getElementById("new-staff-name");
+      const name = input.value.trim();
+      if (!name) return;
+
+      if (staffList.includes(name)) {
+        alert("すでに同じ名前のスタッフが登録されています。");
+        return;
+      }
+
+      staffList.push(name);
+      localStorage.setItem("shift_staff_list", JSON.stringify(staffList));
+      input.value = "";
+      renderTable();
+    }
+
+    function updateStaffName(index, inputElem) {
+      if (!isEditing) return;
+      const oldName = inputElem.getAttribute("data-old-name");
+      const newName = inputElem.value.trim();
+
+      if (!newName) {
+        alert("スタッフ名を空にはできません。");
+        inputElem.value = oldName;
+        return;
+      }
+
+      if (staffList.includes(newName) && newName !== oldName) {
+        alert("すでに存在するスタッフ名です。");
+        inputElem.value = oldName;
+        return;
+      }
+
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      const lastDay = new Date(year, month + 1, 0).getDate();
+
+      for (let d = 1; d <= lastDay; d++) {
+        const currentDayStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        const oldKey = `shift_${oldName}_${currentDayStr}`;
+        const savedData = localStorage.getItem(oldKey);
+        if (savedData) {
+          localStorage.setItem(`shift_${newName}_${currentDayStr}`, savedData);
+          localStorage.removeItem(oldKey);
+        }
+      }
+
+      staffList[index] = newName;
+      localStorage.setItem("shift_staff_list", JSON.stringify(staffList));
+      renderTable();
+    }
+
+    function deleteStaff(name) {
+      if (!isEditing) return;
+      if (confirm(`「${name}」を削除してもよろしいですか？`)) {
+        staffList = staffList.filter(s => s !== name);
+        localStorage.setItem("shift_staff_list", JSON.stringify(staffList));
+        renderTable();
+      }
+    }
+
+    function handleInput(inputElem) {
+      if (!isEditing) return;
+      const parentCell = inputElem.closest('.shift-cell-input');
+      const startInput = parentCell.querySelector('.time-start');
+      const endInput = parentCell.querySelector('.time-end');
+      
+      const val = inputElem.value.trim();
+
+      if (['-', 'ー', '−', '‐', '休'].includes(val)) {
+        startInput.value = '休み';
+        endInput.value = '休み';
+      }
+
+      checkAndApplyOffStyle(startInput, endInput);
+      saveShiftData();
+    }
+
+    function formatTimeInput(inputElem) {
+      if (!isEditing) return;
+      let val = inputElem.value.trim();
+
+      if (!val) {
+        const parentCell = inputElem.closest('.shift-cell-input');
+        const startInput = parentCell.querySelector('.time-start');
+        const endInput = parentCell.querySelector('.time-end');
+        checkAndApplyOffStyle(startInput, endInput);
+        saveShiftData();
+        return;
+      }
+
+      if (['-', 'ー', '−', '‐', '休み'].includes(val)) {
+        return;
+      }
+
+      val = val.replace(/：/g, ':');
+      
+      if (/^\d{3,4}$/.test(val)) {
+        let hour = val.length === 3 ? val.slice(0, 1) : val.slice(0, 2);
+        let min = val.slice(-2);
+        val = `${hour}:${min}`;
+      }
+
+      const parts = val.split(':');
+      if (parts.length === 2) {
+        let h = parts[0].padStart(2, '0');
+        let m = parts[1].padStart(2, '0');
+        val = `${h}:${m}`;
+        inputElem.value = val;
+      }
+
+      saveShiftData();
+    }
+
+    function checkAndApplyOffStyle(startInput, endInput) {
+      const isStartOff = startInput.value.trim() === '休み';
+      const isEndOff = endInput.value.trim() === '休み';
+
+      if (isStartOff || isEndOff) {
+        startInput.classList.add('is-off');
+        endInput.classList.add('is-off');
+      } else {
+        startInput.classList.remove('is-off');
+        endInput.classList.remove('is-off');
+      }
+    }
+
+    function saveShiftData() {
+      if (!isEditing) return;
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      const lastDay = new Date(year, month + 1, 0).getDate();
+
+      staffList.forEach(staff => {
+        for (let d = 1; d <= lastDay; d++) {
+          const currentDayStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+          const startElem = document.querySelector(`.time-start[data-staff="${staff}"][data-date="${currentDayStr}"]`);
+          const endElem = document.querySelector(`.time-end[data-staff="${staff}"][data-date="${currentDayStr}"]`);
+
+          if (startElem && endElem) {
+            const data = {
+              start: startElem.value,
+              end: endElem.value
+            };
+            if (data.start || data.end) {
+              localStorage.setItem(`shift_${staff}_${currentDayStr}`, JSON.stringify(data));
+            } else {
+              localStorage.removeItem(`shift_${staff}_${currentDayStr}`);
+            }
+          }
+        }
+      });
+    }
+
+    function logout() {
+      sessionStorage.removeItem("isLoggedIn");
+      window.location.href = "index.html";
+    }
+
+    renderTable();
+  </script>
+</body>
+</html>
