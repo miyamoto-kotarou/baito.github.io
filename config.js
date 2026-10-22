@@ -9,5 +9,5 @@ const SITE_CONFIG = {
   editPassword: "1",
 
   // 3. スプレッドシート連携用GASのURL（★取得したURLをここに貼り付けます）
-  gasUrl: "https://script.google.com/macros/s/ここに取得したURLを貼り付け/exec"
+  gasUrl: https://script.google.com/macros/s/AKfycbxQbbBN1cSlFOLP1-6RPzttJWAsH-6ow6S14C7bCF9FvfYz8z85P9I4UQyGFTs9qRER/exec"
 };
