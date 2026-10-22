@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>管理者設定画面</title>
+  <script src="config.js"></script>
+  <script>
+    if (sessionStorage.getItem("isLoggedIn") !== "true") {
+      alert("ログインが必要です。");
+      window.location.href = "index.html";
+    }
+  </script>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 2rem;
+      background-color: #f4f4f9;
+      color: #333;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      width: 100%;
+      max-width: 600px;
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      font-size: 1.5rem;
+      margin-top: 0;
+      border-bottom: 2px solid #007bff;
+      padding-bottom: 0.5rem;
+    }
+    .section {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #eee;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+    }
+    input[type="password"] {
+      width: 100%;
+      padding: 0.5rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+      box-sizing: border-box;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .back-btn {
+      background-color: #6c757d;
+      margin-top: 1rem;
+    }
+    .back-btn:hover {
+      background-color: #5a6268;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>⚙️ 管理者設定画面</h1>
+
+    <div class="section">
+      <label for="new-login-password">新しいログイン用パスワード</label>
+      <input type="password" id="new-login-password" placeholder="ログイン用パスワードを入力">
+      <button onclick="updateLoginPassword()">ログイン用パスワードを更新</button>
+    </div>
+
+    <div class="section">
+      <label for="new-edit-password">新しいシフト編集用パスワード</label>
+      <input type="password" id="new-edit-password" placeholder="編集用パスワードを入力">
+      <button onclick="updateEditPassword()">編集用パスワードを更新</button>
+    </div>
+
+    <button class="back-btn" onclick="location.href='main.html'">◀ シフト表に戻る</button>
+  </div>
+
+  <script>
+    function updateLoginPassword() {
+      const newPwd = document.getElementById("new-login-password").value.trim();
+      if (!newPwd) {
+        alert("パスワードを入力してください。");
+        return;
+      }
+      localStorage.setItem("site_login_password", newPwd);
+      alert("ログイン用パスワードを更新しました！");
+      document.getElementById("new-login-password").value = "";
+    }
+
+    function updateEditPassword() {
+      const newPwd = document.getElementById("new-edit-password").value.trim();
+      if (!newPwd) {
+        alert("パスワードを入力してください。");
+        return;
+      }
+      localStorage.setItem("site_edit_password", newPwd);
+      alert("シフト編集用パスワードを更新しました！");
+      document.getElementById("new-edit-password").value = "";
+    }
+  </script>
+</body>
+</html>
