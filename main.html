@@ -103,6 +103,13 @@
       border-radius: 4px;
     }
 
+    .sync-status {
+      font-size: 0.85rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      color: #007bff;
+    }
+
     .table-wrapper {
       max-height: 75vh;
       overflow-y: auto;
@@ -214,6 +221,8 @@
       </div>
     </div>
 
+    <div id="sync-status" class="sync-status">データの読み込み中...</div>
+
     <div id="staff-add-container" class="staff-add-area">
       <input type="text" id="new-staff-name" placeholder="新しいスタッフ名">
       <button onclick="addStaff()">スタッフを追加</button>
@@ -229,7 +238,63 @@
   <script>
     let currentDate = new Date();
     let isEditing = false;
-    let staffList = JSON.parse(localStorage.getItem("shift_staff_list")) || ["スタッフA", "スタッフB", "スタッフC"];
+    let staffList = ["スタッフA", "スタッフB", "スタッフC"];
+    let shiftDataStore = {}; // クラウドから取得したシフトデータを保存
+
+    // GASから最新データを取得
+    async function loadCloudData() {
+      const statusElem = document.getElementById("sync-status");
+      statusElem.textContent = "☁️ クラウドから最新データを読み込んでいます...";
+
+      if (!SITE_CONFIG.gasUrl || SITE_CONFIG.gasUrl.includes("YOUR_GAS_DEPLOYMENT_ID")) {
+        statusElem.textContent = "⚠️ config.js に GAS の URL が設定されていません。";
+        renderTable();
+        return;
+      }
+
+      try {
+        const response = await fetch(SITE_CONFIG.gasUrl);
+        const data = await response.json();
+        
+        if (data.staffList && data.staffList.length > 0) {
+          staffList = data.staffList;
+        }
+        if (data.shiftData) {
+          shiftDataStore = data.shiftData;
+        }
+        statusElem.textContent = "✅ 最新データに同期されました";
+      } catch (err) {
+        console.error(err);
+        statusElem.textContent = "⚠️ データの取得に失敗しました（オフラインまたはURL設定エラー）";
+      }
+      renderTable();
+    }
+
+    // GASへ変更データを送信・保存
+    async function saveCloudData() {
+      const statusElem = document.getElementById("sync-status");
+      statusElem.textContent = "☁️ クラウドに保存中...";
+
+      if (!SITE_CONFIG.gasUrl || SITE_CONFIG.gasUrl.includes("YOUR_GAS_DEPLOYMENT_ID")) {
+        return;
+      }
+
+      try {
+        await fetch(SITE_CONFIG.gasUrl, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            staffList: staffList,
+            shiftData: shiftDataStore
+          })
+        });
+        statusElem.textContent = "✅ クラウドに保存完了";
+      } catch (err) {
+        console.error(err);
+        statusElem.textContent = "❌ 保存に失敗しました";
+      }
+    }
 
     function toggleEditMode() {
       if (!isEditing) {
@@ -332,7 +397,6 @@
           if (dayOfWeek === 0) td.classList.add("sun");
           if (dayOfWeek === 6) td.classList.add("sat");
 
-          // onfocus="this.select()" を追加してクリック時に全選択されるようにする
           td.innerHTML = `
             <div class="shift-cell-input">
               <input type="text" class="time-input time-start" placeholder="-" data-staff="${staff}" data-date="${currentDayStr}" ${isEditing ? '' : 'readonly'} onfocus="this.select()" onblur="formatTimeInput(this)" oninput="handleInput(this)">
@@ -340,14 +404,14 @@
             </div>
           `;
 
-          const savedData = localStorage.getItem(`shift_${staff}_${currentDayStr}`);
+          const dataKey = `shift_${staff}_${currentDayStr}`;
+          const savedData = shiftDataStore[dataKey];
           if (savedData) {
-            const parsed = JSON.parse(savedData);
             const startInput = td.querySelector(".time-start");
             const endInput = td.querySelector(".time-end");
             
-            if (parsed.start) startInput.value = parsed.start;
-            if (parsed.end) endInput.value = parsed.end;
+            if (savedData.start) startInput.value = savedData.start;
+            if (savedData.end) endInput.value = savedData.end;
             
             checkAndApplyOffStyle(startInput, endInput);
           }
@@ -375,9 +439,9 @@
       }
 
       staffList.push(name);
-      localStorage.setItem("shift_staff_list", JSON.stringify(staffList));
       input.value = "";
       renderTable();
+      saveCloudData();
     }
 
     function updateStaffName(index, inputElem) {
@@ -404,24 +468,23 @@
       for (let d = 1; d <= lastDay; d++) {
         const currentDayStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
         const oldKey = `shift_${oldName}_${currentDayStr}`;
-        const savedData = localStorage.getItem(oldKey);
-        if (savedData) {
-          localStorage.setItem(`shift_${newName}_${currentDayStr}`, savedData);
-          localStorage.removeItem(oldKey);
+        if (shiftDataStore[oldKey]) {
+          shiftDataStore[`shift_${newName}_${currentDayStr}`] = shiftDataStore[oldKey];
+          delete shiftDataStore[oldKey];
         }
       }
 
       staffList[index] = newName;
-      localStorage.setItem("shift_staff_list", JSON.stringify(staffList));
       renderTable();
+      saveCloudData();
     }
 
     function deleteStaff(name) {
       if (!isEditing) return;
       if (confirm(`「${name}」を削除してもよろしいですか？`)) {
         staffList = staffList.filter(s => s !== name);
-        localStorage.setItem("shift_staff_list", JSON.stringify(staffList));
         renderTable();
+        saveCloudData();
       }
     }
 
@@ -439,7 +502,7 @@
       }
 
       checkAndApplyOffStyle(startInput, endInput);
-      saveShiftData();
+      saveCurrentTableToStore();
     }
 
     function formatTimeInput(inputElem) {
@@ -451,7 +514,7 @@
         const startInput = parentCell.querySelector('.time-start');
         const endInput = parentCell.querySelector('.time-end');
         checkAndApplyOffStyle(startInput, endInput);
-        saveShiftData();
+        saveCurrentTableToStore();
         return;
       }
 
@@ -475,7 +538,7 @@
         inputElem.value = val;
       }
 
-      saveShiftData();
+      saveCurrentTableToStore();
     }
 
     function checkAndApplyOffStyle(startInput, endInput) {
@@ -491,7 +554,7 @@
       }
     }
 
-    function saveShiftData() {
+    function saveCurrentTableToStore() {
       if (!isEditing) return;
       const year = currentDate.getFullYear();
       const month = currentDate.getMonth();
@@ -504,18 +567,20 @@
           const endElem = document.querySelector(`.time-end[data-staff="${staff}"][data-date="${currentDayStr}"]`);
 
           if (startElem && endElem) {
-            const data = {
-              start: startElem.value,
-              end: endElem.value
-            };
-            if (data.start || data.end) {
-              localStorage.setItem(`shift_${staff}_${currentDayStr}`, JSON.stringify(data));
+            const key = `shift_${staff}_${currentDayStr}`;
+            if (startElem.value || endElem.value) {
+              shiftDataStore[key] = {
+                start: startElem.value,
+                end: endElem.value
+              };
             } else {
-              localStorage.removeItem(`shift_${staff}_${currentDayStr}`);
+              delete shiftDataStore[key];
             }
           }
         }
       });
+
+      saveCloudData();
     }
 
     function logout() {
@@ -523,7 +588,8 @@
       window.location.href = "index.html";
     }
 
-    renderTable();
+    // 初期化：クラウドからの読み込み実行
+    loadCloudData();
   </script>
 </body>
 </html>
