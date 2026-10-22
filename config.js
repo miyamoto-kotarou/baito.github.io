@@ -2,12 +2,11 @@
 // サイト設定ファイル
 // ==========================================
 const SITE_CONFIG = {
-  // 1. 最初のログイン画面用パスワード
-  loginPassword: "1",
-
-  // 2. シフトの編集や管理者設定を開くためのパスワード
-  editPassword: "1",
-
-  // 3. スプレッドシート連携用GASのURL（★取得したURLをここに貼り付けます）
-  gasUrl: "https://script.google.com/macros/s/AKfycbzAV3DpSIdfhrsqjVH5uTKmgXybOQZMc1r8NFYCbJoENS_Nyf_fMYokx_FdO9UsWX36SQ/exec"
+  loginPassword: "secretpassword",       // 最初のログイン用パスワード
+  editPassword: "adminpassword",         // 編集・暗号化用パスワード
+  
+  // GitHub連携設定（ユーザー名とリポジトリ名のみ）
+  githubOwner: "miyamoto-kotarou",
+  githubRepo: "baito.github.io"
+  // ※トークンはコードに書かず、初回編集時にブラウザに入力します
 };
