@@ -163,12 +163,14 @@
     let staffList = ["スタッフA", "スタッフB", "スタッフC"];
     let shiftDataStore = {};
 
+    // トークンをブラウザ（LocalStorage）に自動保存・取得する関数
     function getGitHubToken() {
       let token = localStorage.getItem("github_token");
       if (!token) {
-        token = prompt("【GitHub連携】アクセストークン（ghp_...）を入力してください：");
+        token = prompt("【GitHub連携】アクセストークン（ghp_...）を入力してください（※この端末で次回から入力を省略します）：");
         if (token) {
-          localStorage.setItem("github_token", token.trim());
+          token = token.trim();
+          localStorage.setItem("github_token", token);
         }
       }
       return localStorage.getItem("github_token") || "";
@@ -192,7 +194,7 @@
 
       const token = getGitHubToken();
       if (!token) {
-        statusElem.textContent = "⚠️ GitHubトークンが未設定です（編集時に設定されます）";
+        statusElem.textContent = "⚠️ GitHubトークンが未設定です";
         renderTable();
         return;
       }
