@@ -19,7 +19,6 @@
       background-color: #f4f4f9;
       color: #333;
     }
-
     .container {
       max-width: 100%;
       margin: 0 auto;
@@ -29,7 +28,6 @@
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       overflow-x: auto;
     }
-
     .header-nav {
       display: flex;
       justify-content: space-between;
@@ -38,18 +36,8 @@
       flex-wrap: wrap;
       gap: 1rem;
     }
-
-    .header-nav h1 {
-      margin: 0;
-      font-size: 1.4rem;
-    }
-
-    .nav-buttons {
-      display: flex;
-      gap: 0.5rem;
-      align-items: center;
-    }
-
+    .header-nav h1 { margin: 0; font-size: 1.4rem; }
+    .nav-buttons { display: flex; gap: 0.5rem; align-items: center; }
     .nav-buttons button, .staff-add-area button, .logout-btn, .admin-link-btn {
       padding: 0.5rem 1rem;
       background-color: #007bff;
@@ -59,25 +47,8 @@
       cursor: pointer;
       font-size: 0.9rem;
     }
-
-    .nav-buttons button:hover, .staff-add-area button:hover {
-      background-color: #0056b3;
-    }
-
-    .admin-link-btn {
-      background-color: #28a745;
-    }
-    .admin-link-btn:hover {
-      background-color: #218838;
-    }
-
-    .logout-btn {
-      background-color: #6c757d;
-    }
-    .logout-btn:hover {
-      background-color: #5a6268;
-    }
-
+    .admin-link-btn { background-color: #28a745; }
+    .logout-btn { background-color: #6c757d; }
     .edit-mode-btn {
       background-color: #ffc107 !important;
       color: #333 !important;
@@ -87,7 +58,6 @@
       background-color: #dc3545 !important;
       color: white !important;
     }
-
     .staff-add-area {
       display: flex;
       gap: 0.5rem;
@@ -95,34 +65,25 @@
       margin-bottom: 1rem;
       display: none;
     }
-
     .staff-add-area input {
       padding: 0.4rem;
       font-size: 0.9rem;
       border: 1px solid #ccc;
       border-radius: 4px;
     }
-
     .sync-status {
       font-size: 0.85rem;
       font-weight: bold;
       margin-bottom: 0.5rem;
       color: #007bff;
     }
-
     .table-wrapper {
       max-height: 75vh;
       overflow-y: auto;
       overflow-x: auto;
       border: 1px solid #ddd;
     }
-
-    table {
-      border-collapse: collapse;
-      white-space: nowrap;
-      background-color: #fff;
-    }
-
+    table { border-collapse: collapse; white-space: nowrap; background-color: #fff; }
     th, td {
       border: 1px solid #ddd;
       text-align: center;
@@ -130,14 +91,7 @@
       font-size: 0.85rem;
       vertical-align: middle;
     }
-
-    th {
-      background-color: #f8f9fa;
-      position: sticky;
-      top: 0;
-      z-index: 2;
-    }
-
+    th { background-color: #f8f9fa; position: sticky; top: 0; z-index: 2; }
     th.name-col, td.name-col {
       position: sticky;
       left: 0;
@@ -147,10 +101,7 @@
       text-align: left;
       padding-left: 8px;
     }
-    td.name-col {
-      background-color: #fff;
-    }
-
+    td.name-col { background-color: #fff; }
     .name-input, .time-input {
       border: 1px solid transparent;
       background: transparent;
@@ -158,51 +109,24 @@
       font-size: 0.8rem;
       width: 55px;
     }
-
     body.is-editing .name-input {
-      border: 1px solid #ccc;
-      background: #fff;
-      padding: 2px 4px;
-      width: 90px;
+      border: 1px solid #ccc; background: #fff; padding: 2px 4px; width: 90px;
     }
-    body.is-editing .time-input {
-      border: 1px solid #ccc;
-      background: #fff;
-      padding: 2px;
-    }
-
+    body.is-editing .time-input { border: 1px solid #ccc; background: #fff; padding: 2px; }
     th.sun { color: #dc3545; background-color: #fff5f5; }
     th.sat { color: #007bff; background-color: #f0f8ff; }
     td.sun { background-color: #fffcfc; }
     td.sat { background-color: #fafdff; }
-
-    .shift-cell-input {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
+    .shift-cell-input { display: flex; flex-direction: column; gap: 2px; }
     .shift-cell-input input.is-off {
       background-color: #f8d7da !important;
       color: #721c24 !important;
       font-weight: bold;
     }
-
     .delete-staff-btn {
-      display: none;
-      background: none;
-      border: none;
-      color: #dc3545;
-      cursor: pointer;
-      font-size: 0.8rem;
-      margin-left: 4px;
+      display: none; background: none; border: none; color: #dc3545; cursor: pointer; font-size: 0.8rem; margin-left: 4px;
     }
-    body.is-editing .delete-staff-btn {
-      display: inline;
-    }
-    .delete-staff-btn:hover {
-      text-decoration: underline;
-    }
+    body.is-editing .delete-staff-btn { display: inline; }
   </style>
 </head>
 <body>
@@ -221,7 +145,7 @@
       </div>
     </div>
 
-    <div id="sync-status" class="sync-status">データの読み込み中...</div>
+    <div id="sync-status" class="sync-status">🔒 データを復号中...</div>
 
     <div id="staff-add-container" class="staff-add-area">
       <input type="text" id="new-staff-name" placeholder="新しいスタッフ名">
@@ -229,9 +153,7 @@
     </div>
 
     <div class="table-wrapper">
-      <table id="shift-table">
-        <!-- JavaScriptで動的生成 -->
-      </table>
+      <table id="shift-table"></table>
     </div>
   </div>
 
@@ -239,60 +161,115 @@
     let currentDate = new Date();
     let isEditing = false;
     let staffList = ["スタッフA", "スタッフB", "スタッフC"];
-    let shiftDataStore = {}; // クラウドから取得したシフトデータを保存
+    let shiftDataStore = {};
 
-    // GASから最新データを取得
-    async function loadCloudData() {
+    function getGitHubToken() {
+      let token = localStorage.getItem("github_token");
+      if (!token) {
+        token = prompt("【GitHub連携】アクセストークン（ghp_...）を入力してください：");
+        if (token) {
+          localStorage.setItem("github_token", token.trim());
+        }
+      }
+      return localStorage.getItem("github_token") || "";
+    }
+
+    function encryptData(dataObj) {
+      return btoa(encodeURIComponent(JSON.stringify(dataObj)));
+    }
+
+    function decryptData(base64Str) {
+      try {
+        return JSON.parse(decodeURIComponent(atob(base64Str)));
+      } catch (e) {
+        return null;
+      }
+    }
+
+    async function loadFromGitHub() {
       const statusElem = document.getElementById("sync-status");
-      statusElem.textContent = "☁️ クラウドから最新データを読み込んでいます...";
+      statusElem.textContent = "☁️ GitHubからデータを取得中...";
 
-      if (!SITE_CONFIG.gasUrl || SITE_CONFIG.gasUrl.includes("YOUR_GAS_DEPLOYMENT_ID")) {
-        statusElem.textContent = "⚠️ config.js に GAS の URL が設定されていません。";
+      const token = getGitHubToken();
+      if (!token) {
+        statusElem.textContent = "⚠️ GitHubトークンが未設定です（編集時に設定されます）";
         renderTable();
         return;
       }
 
+      const url = `https://api.github.com/repos/${SITE_CONFIG.githubOwner}/${SITE_CONFIG.githubRepo}/contents/data.json`;
+
       try {
-        const response = await fetch(SITE_CONFIG.gasUrl);
-        const data = await response.json();
-        
-        if (data.staffList && data.staffList.length > 0) {
-          staffList = data.staffList;
+        const response = await fetch(url, {
+          headers: { "Authorization": `token ${token}` }
+        });
+
+        if (response.ok) {
+          const fileData = await response.json();
+          const decodedContent = decodeURIComponent(escape(atob(fileData.content)));
+          const decrypted = decryptData(decodedContent);
+          if (decrypted) {
+            if (decrypted.staffList) staffList = decrypted.staffList;
+            if (decrypted.shiftData) shiftDataStore = decrypted.shiftData;
+            statusElem.textContent = "✅ 最新のシフトデータを同期しました";
+          } else {
+            statusElem.textContent = "⚠️ データの復号に失敗しました";
+          }
+        } else {
+          statusElem.textContent = "📁 データファイル未作成（初回の編集保存で自動作成されます）";
         }
-        if (data.shiftData) {
-          shiftDataStore = data.shiftData;
-        }
-        statusElem.textContent = "✅ 最新データに同期されました";
       } catch (err) {
         console.error(err);
-        statusElem.textContent = "⚠️ データの取得に失敗しました（オフラインまたはURL設定エラー）";
+        statusElem.textContent = "⚠️ データの取得に失敗しました";
       }
       renderTable();
     }
 
-    // GASへ変更データを送信・保存
-    async function saveCloudData() {
+    async function saveToGitHub() {
       const statusElem = document.getElementById("sync-status");
-      statusElem.textContent = "☁️ クラウドに保存中...";
+      statusElem.textContent = "☁️ GitHubに保存中...";
 
-      if (!SITE_CONFIG.gasUrl || SITE_CONFIG.gasUrl.includes("YOUR_GAS_DEPLOYMENT_ID")) {
-        return;
-      }
+      const token = getGitHubToken();
+      if (!token) return;
+
+      const dataToSave = { staffList, shiftData: shiftDataStore };
+      const encryptedStr = encryptData(dataToSave);
+      const url = `https://api.github.com/repos/${SITE_CONFIG.githubOwner}/${SITE_CONFIG.githubRepo}/contents/data.json`;
+      const encodedContent = btoa(unescape(encodeURIComponent(encryptedStr)));
 
       try {
-        await fetch(SITE_CONFIG.gasUrl, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            staffList: staffList,
-            shiftData: shiftDataStore
-          })
+        let sha = "";
+        const getRes = await fetch(url, {
+          headers: { "Authorization": `token ${token}` }
         });
-        statusElem.textContent = "✅ クラウドに保存完了";
+        if (getRes.ok) {
+          const fileInfo = await getRes.json();
+          sha = fileInfo.sha;
+        }
+
+        const bodyData = {
+          message: "Update shift data (encrypted)",
+          content: encodedContent
+        };
+        if (sha) bodyData.sha = sha;
+
+        const putRes = await fetch(url, {
+          method: "PUT",
+          headers: {
+            "Authorization": `token ${token}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(bodyData)
+        });
+
+        if (putRes.ok) {
+          statusElem.textContent = "✅ GitHubへの保存が完了しました";
+        } else {
+          statusElem.textContent = "❌ 保存に失敗しました";
+        }
       } catch (err) {
         console.error(err);
-        statusElem.textContent = "❌ 保存に失敗しました";
+        statusElem.textContent = "❌ 保存エラーが発生しました";
       }
     }
 
@@ -326,7 +303,6 @@
     function goToAdmin() {
       const inputPwd = prompt("管理者設定を開くためのパスワードを入力してください：");
       const currentEditPwd = localStorage.getItem("site_edit_password") || SITE_CONFIG.editPassword;
-
       if (inputPwd === currentEditPwd) {
         window.location.href = "admin.html";
       } else if (inputPwd !== null) {
@@ -345,7 +321,6 @@
       table.innerHTML = "";
 
       const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
-
       let headerTr1 = document.createElement("tr");
       let thName = document.createElement("th");
       thName.className = "name-col";
@@ -379,7 +354,6 @@
 
       staffList.forEach((staff, index) => {
         const tr = document.createElement("tr");
-        
         const tdName = document.createElement("td");
         tdName.className = "name-col";
         tdName.innerHTML = `
@@ -409,16 +383,12 @@
           if (savedData) {
             const startInput = td.querySelector(".time-start");
             const endInput = td.querySelector(".time-end");
-            
             if (savedData.start) startInput.value = savedData.start;
             if (savedData.end) endInput.value = savedData.end;
-            
             checkAndApplyOffStyle(startInput, endInput);
           }
-
           tr.appendChild(td);
         }
-
         table.appendChild(tr);
       });
     }
@@ -432,35 +402,28 @@
       const input = document.getElementById("new-staff-name");
       const name = input.value.trim();
       if (!name) return;
-
       if (staffList.includes(name)) {
         alert("すでに同じ名前のスタッフが登録されています。");
         return;
       }
-
       staffList.push(name);
       input.value = "";
       renderTable();
-      saveCloudData();
+      saveToGitHub();
     }
 
     function updateStaffName(index, inputElem) {
       if (!isEditing) return;
       const oldName = inputElem.getAttribute("data-old-name");
       const newName = inputElem.value.trim();
-
       if (!newName) {
-        alert("スタッフ名を空にはできません。");
         inputElem.value = oldName;
         return;
       }
-
       if (staffList.includes(newName) && newName !== oldName) {
-        alert("すでに存在するスタッフ名です。");
         inputElem.value = oldName;
         return;
       }
-
       const year = currentDate.getFullYear();
       const month = currentDate.getMonth();
       const lastDay = new Date(year, month + 1, 0).getDate();
@@ -473,10 +436,9 @@
           delete shiftDataStore[oldKey];
         }
       }
-
       staffList[index] = newName;
       renderTable();
-      saveCloudData();
+      saveToGitHub();
     }
 
     function deleteStaff(name) {
@@ -484,7 +446,7 @@
       if (confirm(`「${name}」を削除してもよろしいですか？`)) {
         staffList = staffList.filter(s => s !== name);
         renderTable();
-        saveCloudData();
+        saveToGitHub();
       }
     }
 
@@ -493,14 +455,12 @@
       const parentCell = inputElem.closest('.shift-cell-input');
       const startInput = parentCell.querySelector('.time-start');
       const endInput = parentCell.querySelector('.time-end');
-      
       const val = inputElem.value.trim();
 
       if (['-', 'ー', '−', '‐', '休'].includes(val)) {
         startInput.value = '休み';
         endInput.value = '休み';
       }
-
       checkAndApplyOffStyle(startInput, endInput);
       saveCurrentTableToStore();
     }
@@ -508,44 +468,29 @@
     function formatTimeInput(inputElem) {
       if (!isEditing) return;
       let val = inputElem.value.trim();
-
       if (!val) {
         const parentCell = inputElem.closest('.shift-cell-input');
-        const startInput = parentCell.querySelector('.time-start');
-        const endInput = parentCell.querySelector('.time-end');
-        checkAndApplyOffStyle(startInput, endInput);
+        checkAndApplyOffStyle(parentCell.querySelector('.time-start'), parentCell.querySelector('.time-end'));
         saveCurrentTableToStore();
         return;
       }
-
-      if (['-', 'ー', '−', '‐', '休み'].includes(val)) {
-        return;
-      }
+      if (['-', 'ー', '−', '‐', '休み'].includes(val)) return;
 
       val = val.replace(/：/g, ':');
-      
       if (/^\d{3,4}$/.test(val)) {
         let hour = val.length === 3 ? val.slice(0, 1) : val.slice(0, 2);
         let min = val.slice(-2);
         val = `${hour}:${min}`;
       }
-
       const parts = val.split(':');
       if (parts.length === 2) {
-        let h = parts[0].padStart(2, '0');
-        let m = parts[1].padStart(2, '0');
-        val = `${h}:${m}`;
-        inputElem.value = val;
+        inputElem.value = `${parts[0].padStart(2, '0')}:${parts[1].padStart(2, '0')}`;
       }
-
       saveCurrentTableToStore();
     }
 
     function checkAndApplyOffStyle(startInput, endInput) {
-      const isStartOff = startInput.value.trim() === '休み';
-      const isEndOff = endInput.value.trim() === '休み';
-
-      if (isStartOff || isEndOff) {
+      if (startInput.value.trim() === '休み' || endInput.value.trim() === '休み') {
         startInput.classList.add('is-off');
         endInput.classList.add('is-off');
       } else {
@@ -569,18 +514,14 @@
           if (startElem && endElem) {
             const key = `shift_${staff}_${currentDayStr}`;
             if (startElem.value || endElem.value) {
-              shiftDataStore[key] = {
-                start: startElem.value,
-                end: endElem.value
-              };
+              shiftDataStore[key] = { start: startElem.value, end: endElem.value };
             } else {
               delete shiftDataStore[key];
             }
           }
         }
       });
-
-      saveCloudData();
+      saveToGitHub();
     }
 
     function logout() {
@@ -588,8 +529,8 @@
       window.location.href = "index.html";
     }
 
-    // 初期化：クラウドからの読み込み実行
-    loadCloudData();
+    // 初期化
+    loadFromGitHub();
   </script>
 </body>
 </html>
