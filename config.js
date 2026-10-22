@@ -6,5 +6,8 @@ const SITE_CONFIG = {
   loginPassword: "1",
 
   // 2. シフトの編集や管理者設定を開くためのパスワード
-  editPassword: "1"
+  editPassword: "1",
+
+  // 3. スプレッドシート連携用GASのURL（★取得したURLをここに貼り付けます）
+  gasUrl: "https://script.google.com/macros/s/ここに取得したURLを貼り付け/exec"
 };
